@@ -1,0 +1,48 @@
+# vibe-code-rule.yaml
+# Read this before generating any code.
+
+installDependency: "pyproject.toml"
+
+readFirst:
+  - .ai/AI-PRINCIPLE-GUIDE.md
+  - .ai/AI-PYTHON-GUIDE.md
+
+projectPatternRules:
+  # Processor
+  - Processor only handles config loading and executor chaining — no business logic
+  - Processor stores executor instances and their results as self.* attributes
+  - Processor.execute() creates each executor, calls .execute(), and passes the result to the next
+
+  # Executors
+  - each executor has one duty — never mix concerns across executors
+  - all executors must inherit from BaseExecutor (program/processor/base_executor.py)
+  - executor __init__ receives (previous_executor_result, full_config) — never partial config
+  - executor extracts only the config section relevant to its duty — never reads unrelated fields
+  - executor.execute() returns a typed pydantic result model — never a plain dict or tuple
+  - executors live in program/processor/ alongside processor.py
+  - executor file names describe their duty: <duty>_executor.py
+
+  # Models
+  - config models live in program/models/config_models.py
+  - result/data models (passed between executors) live in program/models/dataset_models.py or similar
+  - global_config.py is reserved — do not add models there unless explicitly asked
+  - all inter-executor data must be typed pydantic models
+
+  # General
+  - use 2-space indentation for all Python files — never 4 spaces or tabs
+  - always use yaml.safe_load() — never yaml.load()
+  - error messages use ❌ prefix and sys.exit(1) — keep this consistent
+  - config YAML templates belong in program/config_templates/
+  - tests belong in program/test_suits/ — prefix test files with test_
+  - dependencies go in pyproject.toml only — never requirements.txt
+  - if a new module, subpackage, or executor is needed, ask permission before creating it — never auto-create
+  - all files prefixed with "AI-" are owned and maintained by Claude Code — update them when structure, patterns, or conventions change
+  - whenever an AI-*.md file is modified, update its "last ai update" header comment to the current date
+
+safetyRules:
+  secretSafety:
+    - rule: "never print, log, or embed config values that may contain secrets (passwords, tokens, keys) — treat all config values as potentially sensitive"
+
+  configSafety:
+    - rule: "always validate config with pydantic before use — never access raw yaml_data fields directly"
+    - rule: "use yaml.safe_load() exclusively — yaml.load() is forbidden"
