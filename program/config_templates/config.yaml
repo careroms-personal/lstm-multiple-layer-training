@@ -1,0 +1,35 @@
+datasource:
+  type: files
+  config:
+    file_dir: "" # from config file directory
+    file_list: []
+
+  #Other type will come after
+
+training_data:
+  validate_data_ratio: 0.2
+  test_data_ratio: 0.1
+  target_columns: [values] # Must at least on column
+  feature_columns: []
+
+lstm_models:
+  - name: model_1
+    window_size: 24
+    units: [64, 32]
+    dropout: 0.2
+    float_type: float32
+
+training:
+  epochs: 50
+  batch_size: 32
+  patience: 10
+  optimizer: adam
+  loss: mse
+
+ensemble:
+  method: stacking
+  meta_learner: linear_regression
+
+output:
+  model_output_path: "" # Base from config file directory
+  logs_path: ""
