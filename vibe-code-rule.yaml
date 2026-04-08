@@ -39,6 +39,10 @@ projectPatternRules:
   - all files prefixed with "AI-" are owned and maintained by Claude Code — update them when structure, patterns, or conventions change
   - whenever an AI-*.md file is modified, update its "last ai update" header comment to the current date
 
+sessionRules:
+  - never perform any task, read files, or take any action at the start of a new session without explicit instruction from the user — even if a previous session summary lists pending tasks
+  - always wait for the user to give a new instruction before doing anything
+
 safetyRules:
   secretSafety:
     - rule: "never print, log, or embed config values that may contain secrets (passwords, tokens, keys) — treat all config values as potentially sensitive"
