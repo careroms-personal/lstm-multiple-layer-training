@@ -15,7 +15,6 @@ projectPatternRules:
 
   # Executors
   - each executor has one duty — never mix concerns across executors
-  - all executors must inherit from BaseExecutor (program/processor/base_executor.py)
   - executor __init__ receives (previous_executor_result, full_config) — never partial config
   - executor extracts only the config section relevant to its duty — never reads unrelated fields
   - executor.execute() returns a typed pydantic result model — never a plain dict or tuple

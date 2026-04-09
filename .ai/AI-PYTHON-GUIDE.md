@@ -1,6 +1,6 @@
 # pyconfplate — AI Guide
 <!-- last human review: 2026 Mar 24 -->
-<!-- last ai update: 2026 Mar 24 -->
+<!-- last ai update: 2026 Apr 09 -->
 
 Quick reference for AI assistants working in this codebase.
 See `vibe-code-rule.yaml` for project rules.
@@ -29,7 +29,6 @@ pyconfplate/
     │   └── result_models.py         # pydantic result models passed between executors
     ├── processor/
     │   ├── processor.py             # orchestrator: config load + executor chain
-    │   ├── base_executor.py         # abstract base class — all executors inherit this
     │   ├── <duty>_executor.py       # one file per executor
     │   └── ...
     ├── global_config.py             # reserved — do not add models here
@@ -47,7 +46,6 @@ pyconfplate/
 |---|---|
 | CLI argument parsing | `program/app/main.py` |
 | Executor chain and flow | `program/processor/processor.py` |
-| Base executor contract | `program/processor/base_executor.py` |
 | Config structure (pydantic) | `program/models/config_models.py` |
 | Inter-executor result types | `program/models/result_models.py` |
 | YAML config structure | `program/config_templates/config.yaml` |
@@ -149,34 +147,15 @@ class Processor:
 
 ---
 
-### 3. Base Executor (`base_executor.py`)
+### 3. Executor (`<duty>_executor.py`)
 
-All executors must inherit from `BaseExecutor`. It enforces the `execute()` contract.
-
-```python
-# program/processor/base_executor.py
-from abc import ABC, abstractmethod
-from typing import Any
-
-class BaseExecutor(ABC):
-  @abstractmethod
-  def execute(self) -> Any:
-    """Execute this executor's duty and return a typed result."""
-    pass
-```
-
----
-
-### 4. Executor (`<duty>_executor.py`)
-
-One duty per executor. Inherits `BaseExecutor`. Receives previous result + full config. Returns typed model.
+One duty per executor. Receives previous result + full config. Returns typed model.
 
 ```python
-from processor.base_executor import BaseExecutor
 from models.config_models import AppConfig
 from models.result_models import FirstResult, SecondResult
 
-class SecondExecutor(BaseExecutor):
+class SecondExecutor:
   def __init__(self, first_result: FirstResult, config: AppConfig):
     self.first_result = first_result
     # extract only the config section this executor needs
@@ -194,7 +173,7 @@ class SecondExecutor(BaseExecutor):
 
 ---
 
-### 5. Config Models (`models/config_models.py`)
+### 4. Config Models (`models/config_models.py`)
 
 Top-level model validated on startup. Sub-models scoped to each executor's duty.
 
@@ -216,7 +195,7 @@ class AppConfig(BaseModel):
 
 ---
 
-### 6. Result Models (`models/result_models.py`)
+### 5. Result Models (`models/result_models.py`)
 
 Typed outputs passed between executors by Processor.
 
@@ -234,7 +213,7 @@ class SecondResult(BaseModel):
 
 ---
 
-### 7. YAML Config Template (`config_templates/config.yaml`)
+### 6. YAML Config Template (`config_templates/config.yaml`)
 
 Mirror the pydantic model structure. Use `REQUEST` as placeholder for values the user must fill in.
 

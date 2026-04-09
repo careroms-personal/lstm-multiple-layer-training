@@ -1,0 +1,50 @@
+datasource:
+  type: files
+  config:
+    file_dir: "./sample-dataset" # from config file directory
+    format: csv
+    file_list:
+      - "sample-1.csv"
+
+  #Other type will come after
+
+training_data:
+  validate_data_ratio: 0.2
+  test_data_ratio: 0.1
+  timeseries_column: "elapsed_s"
+  target_columns: [disk_gb]
+  feature_columns: []
+
+lstm_models:
+  - name: day_prediction
+    window_size: 288
+    units: [64, 32]
+    dropout: 0.2
+    float_type: float32
+  
+  - name: week_prediction
+    window_size: 2016
+    units: [64, 32]
+    dropout: 0.2
+    float_type: float32
+
+training:
+  epochs: 50
+  batch_size: 32
+  patience: 10
+  optimizer: adam
+  loss: mse
+
+ensemble:
+  method: stacking
+  meta_learner: linear_regression
+
+output:
+  model_output_path: "./training/model"
+
+  print_output:
+    training_logs: true
+  
+  write_output:
+    training_data_path: "./training/dataset"
+    logs_path: "./training/logs"

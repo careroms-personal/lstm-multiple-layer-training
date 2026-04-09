@@ -1,16 +1,20 @@
+# All directory or path is from config file base directory
+# All datasource must be same pattern for one trining propose
 datasource:
   type: files
   config:
-    file_dir: "" # from config file directory
+    file_dir: ""
     file_list: []
+    format: csv      # csv | parquet | json
 
   #Other type will come after
 
 training_data:
   validate_data_ratio: 0.2
   test_data_ratio: 0.1
-  target_columns: [values] # Must at least on column
-  feature_columns: []
+  timeseries_column: "timestamp" # Required: for sorting data
+  target_columns: []      # Required: columns to predict
+  extra_feature_columns: []  # Optional: non-target inputs like hour_of_day, is_backup
 
 lstm_models:
   - name: model_1
@@ -31,5 +35,12 @@ ensemble:
   meta_learner: linear_regression
 
 output:
-  model_output_path: "" # Base from config file directory
-  logs_path: ""
+  model_output_path: ""
+  print_output: # Optional
+    training_data: false
+    training_logs: false
+    model_summary: false    # useful to always see model architecture
+    ensemble_weights: false # for stacking, see meta-learner weights
+  write_output: # Optional, if not existed, nothing write
+    training_data_path: ""
+    logs_path: ""

@@ -1,0 +1,35 @@
+import sys
+import pandas as pd
+
+from pathlib import Path
+from models.datasources_config import Files
+
+class CSVDatasetExecutor:
+  def __init__(self, datasource_config: Files):
+    self.file_dir = Path(datasource_config.file_dir)
+    self.file_list = datasource_config.file_list
+
+  def _load_csv_to_dataframe(self) -> pd.DataFrame:
+    if not self.file_dir.exists():
+      print(f"❌ file_dir not found: {self.file_dir}")
+      sys.exit(1)
+
+    if self.file_list:
+      paths = [self.file_dir / f for f in self.file_list]
+    else:
+      paths = sorted(self.file_dir.glob("*.csv"))
+
+    if not paths:
+      print(f"❌ No CSV files found in: {self.file_dir}")
+      sys.exit(1)
+
+    missing = [p for p in paths if not p.exists()]
+    if missing:
+      for p in missing:
+        print(f"❌ CSV file not found: {p}")
+      sys.exit(1)
+
+    return pd.concat([pd.read_csv(p) for p in paths], ignore_index=True)
+
+  def executor(self) -> pd.DataFrame:
+    return self._load_csv_to_dataframe()
