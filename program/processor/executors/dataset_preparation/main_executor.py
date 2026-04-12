@@ -17,7 +17,7 @@ class DatasetPreparationExecutor:
   def _load_datasource(self) -> pd.DataFrame:
     match self.datasources.type:
       case "files":
-        datasource_executor = self.files_executor[self.datasources.config.get("format")](self.datasources.config)
+        datasource_executor = self.files_executor[self.datasources.config.format](self.datasources.config)
 
       case _:
         raise ValueError(f"Unsupported datasource type: {self.datasources.type}")

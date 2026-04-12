@@ -191,6 +191,26 @@ cython_debug/
 # Ruff stuff:
 .ruff_cache/
 
+# TensorFlow / Keras model artifacts
+*.h5
+*.keras
+*.pb
+checkpoint
+*.ckpt
+*.ckpt.*
+saved_model/
+
+# Training output (generated at runtime from config output paths)
+program/test_suits/test_config/training/
+
+# Windows OS artifacts
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Visual Studio Code
+.vscode/
+
 # PyPI configuration file
 .pypirc
 

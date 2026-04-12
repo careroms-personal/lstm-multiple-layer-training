@@ -4,7 +4,7 @@ datasource:
     file_dir: "./sample-dataset" # from config file directory
     format: csv
     file_list:
-      - "sample-1.csv"
+      - "disk_sim_5min.csv"
 
   #Other type will come after
 
@@ -43,7 +43,10 @@ output:
   model_output_path: "./training/model"
 
   print_output:
+    training_data: true
     training_logs: true
+    model_summary: true
+    ensemble_weights: true
   
   write_output:
     training_data_path: "./training/dataset"
