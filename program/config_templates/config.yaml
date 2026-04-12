@@ -10,11 +10,11 @@ datasource:
   #Other type will come after
 
 training_data:
-  validate_data_ratio: 0.2
+  validation_data_ratio: 0.2
   test_data_ratio: 0.1
   timeseries_column: "timestamp" # Required: for sorting data
   target_columns: []      # Required: columns to predict
-  extra_feature_columns: []  # Optional: non-target inputs like hour_of_day, is_backup
+  feature_columns: []  # Optional: non-target inputs like hour_of_day, is_backup
 
 lstm_models:
   - name: model_1
@@ -23,7 +23,7 @@ lstm_models:
     dropout: 0.2
     float_type: float32
 
-training:
+training_setting:
   epochs: 50
   batch_size: 32
   patience: 10

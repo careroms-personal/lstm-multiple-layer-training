@@ -1,6 +1,8 @@
 import pandas as pd
 
 from models.training_config import TrainingConfig
+from models.lstm_model import ModelTrainingDataset
+
 from .csv_dataset_executor import CSVDatasetExecutor
 
 class DatasetPreparationExecutor:
@@ -32,10 +34,28 @@ class DatasetPreparationExecutor:
     validation_dataset = df.iloc[-(test_size + val_size):-test_size].reset_index(drop=True)
     test_dataset = df.iloc[-test_size:].reset_index(drop=True)
 
-    return training_dataset, validation_dataset, test_dataset
-    
-  def executor(self):
-    raw_dataset = self._load_datasource()
-    training_dataset, validation_dataset, test_dataset = self._split_test_data(raw_dataset)
+    return ModelTrainingDataset(
+      training_dataset=training_dataset, 
+      validation_dataset=validation_dataset, 
+      test_dataset=test_dataset,
+      timeseries_column=self.training_data.timeseries_column,
+      target_columns=self.training_data.target_columns,
+      feature_columns=self.training_data.feature_columns,
+    )
+  
+  def _prepare_column(self, df: pd.DataFrame) -> pd.DataFrame:
+    ordered_columns = (
+      self.training_data.feature_columns + self.training_data.target_columns
+    )
 
-    return training_dataset, validation_dataset, test_dataset
+    return df[ordered_columns]
+    
+  def executor(self) -> ModelTrainingDataset:
+    raw_dataset = self._load_datasource()
+    model_training_dataset = self._split_test_data(raw_dataset)
+
+    model_training_dataset.training_dataset = self._prepare_column(model_training_dataset.training_dataset)
+    model_training_dataset.validation_dataset = self._prepare_column(model_training_dataset.validation_dataset)
+    model_training_dataset.test_dataset = self._prepare_column(model_training_dataset.test_dataset)
+
+    return model_training_dataset

@@ -6,6 +6,7 @@ from pydantic import ValidationError
 from models.training_config import TrainingConfig
 
 from executors.dataset_preparation.main_executor import DatasetPreparationExecutor
+from executors.model_preparation.main_executor import ModelPreparationExecutor
 
 class Processor:
   def __init__(self, config_path: str):
@@ -33,4 +34,7 @@ class Processor:
 
   def execute(self):
     dataset_preparation_executor = DatasetPreparationExecutor(self.training_config)
-    training_dataset, validation_dataset, test_dataset = dataset_preparation_executor.executor
+    model_training_dataset = dataset_preparation_executor.executor()
+
+    model_preparation = ModelPreparationExecutor(self.training_config, model_training_dataset)
+    model_preparation.execute()

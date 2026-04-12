@@ -34,7 +34,7 @@ class TrainingData(BaseModel):
   test_data_ratio: float
   timeseries_column: str
   target_columns: List[str] = []
-  extra_feature_columns: List[str] = []
+  feature_columns: List[str] = []
 
 class LSTMModel(BaseModel):
   name: str
@@ -43,7 +43,7 @@ class LSTMModel(BaseModel):
   dropout: float
   float_type: Literal["float32"]
 
-class Training(BaseModel):
+class TrainingSetting(BaseModel):
   epochs: int = 50
   batch_size: int = 32
   patience: int = 10
@@ -74,6 +74,6 @@ class TrainingConfig(BaseModel):
   datasource: Datasource
   training_data: TrainingData
   lstm_models: List[LSTMModel]
-  training: Training
+  training_setting: TrainingSetting
   ensemble: Ensemble
   output: Output
