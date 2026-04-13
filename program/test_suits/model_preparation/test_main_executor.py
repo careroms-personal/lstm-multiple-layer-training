@@ -6,7 +6,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 from models.datasources_config_model import Files
 from models.training_config import TrainingConfig
-from models.lstm_model import ModelTrainingConfig
+from models.lstm_architecture import ModelArchitectureConfig
 from processor.executors.dataset_preparation.csv_dataset_executor import CSVDatasetExecutor
 from processor.executors.dataset_preparation.main_executor import DatasetPreparationExecutor
 from processor.executors.model_preparation.main_executor import ModelPreparationExecutor
@@ -115,7 +115,7 @@ class TestExecute:
 
   def test_each_result_is_model_training_config(self, executor):
     result = executor.execute()
-    assert all(isinstance(c, ModelTrainingConfig) for c in result)
+    assert all(isinstance(c, ModelArchitectureConfig) for c in result)
 
   def test_architecture_params_match_config(self, executor, training_config):
     result = executor.execute()

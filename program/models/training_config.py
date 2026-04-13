@@ -1,9 +1,10 @@
 from pydantic import BaseModel, model_validator
-from typing import Optional, List, Any, Literal
+from typing import Optional, List, Any, Literal, Union
 from enum import StrEnum
 
 from .datasources_config_model import Files
 from .debug_model import Debug
+from .optimizer_model import AdamConfig, SGDConfig
 
 class DatasourceType(StrEnum):
   Files = "files"
@@ -48,8 +49,13 @@ class TrainingSetting(BaseModel):
   epochs: int = 50
   batch_size: int = 32
   patience: int = 10
-  optimizer: Literal["adam"] = "adam"
+  optimizer: Union[AdamConfig, SGDConfig]
   loss: Literal["mse"] = "mse"
+  gradient_clip: float = 1.0
+
+  max_parallel: int = 1
+  use_gpu: bool = True
+  memory_growth: bool = True 
 
 class Ensemble(BaseModel):
   method: Literal["stacking"]

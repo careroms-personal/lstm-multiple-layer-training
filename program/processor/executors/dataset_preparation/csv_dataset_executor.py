@@ -14,7 +14,7 @@ class CSVDatasetExecutor:
 
   def _load_csv_to_dataframe(self) -> pd.DataFrame:
     if not self.file_dir.exists():
-      print(f"❌ file_dir not found: {self.file_dir}")
+      print(f"[ERROR] file_dir not found: {self.file_dir}")
       sys.exit(1)
 
     if self.file_list:
@@ -23,14 +23,14 @@ class CSVDatasetExecutor:
       paths = sorted(self.file_dir.glob("*.csv"))
 
     if not paths:
-      print(f"❌ No CSV files found in: {self.file_dir}")
+      print(f"[ERROR] No CSV files found in: {self.file_dir}")
       sys.exit(1)
 
     missing = [p for p in paths if not p.exists()]
 
     if missing:
       for p in missing:
-        print(f"❌ CSV file not found: {p}")
+        print(f"[ERROR] CSV file not found: {p}")
       sys.exit(1)
 
     return pd.concat([pd.read_csv(p) for p in paths], ignore_index=True)

@@ -27,8 +27,20 @@ training_setting:
   epochs: 50
   batch_size: 32
   patience: 10
-  optimizer: adam
+  gradient_clip: 1.0
+  optimizer: 
+    type: adam
+    learning_rate: 0.001
+    beta1: 0.9
+    beta2: 0.999
+    eps: 0.00000001
+    weight_decay: 0.0
   loss: mse
+
+  #For set parallel training. 0 mean train all at once
+  max_parallel: 1
+  use_gpu: true
+  memory_growth: true
 
 ensemble:
   method: stacking
@@ -51,3 +63,6 @@ debug:
     sub_executor: false
   model_preparation:
     main_executor: false
+  model_training:
+    main_executor: false
+    model_build_executor: false

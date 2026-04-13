@@ -27,6 +27,11 @@ class DatasetPreparationDebug(DebugBase):
 class ModelPreparationDebug(DebugBase):
   main_executor: bool = False
 
+class ModelTrainingDebug(DebugBase):
+  main_executor: bool = False
+  model_build_executor: bool = False
+
 class Debug(BaseModel):
-  dataset_preparation: DatasetPreparationDebug
-  model_preparation: ModelPreparationDebug
+  dataset_preparation: DatasetPreparationDebug = DatasetPreparationDebug()
+  model_preparation: ModelPreparationDebug = ModelPreparationDebug()
+  model_training: ModelTrainingDebug = ModelTrainingDebug()

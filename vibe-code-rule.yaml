@@ -30,7 +30,7 @@ projectPatternRules:
   # General
   - use 2-space indentation for all Python files — never 4 spaces or tabs
   - always use yaml.safe_load() — never yaml.load()
-  - error messages use ❌ prefix and sys.exit(1) — keep this consistent
+  - error messages use [ERROR] prefix and sys.exit(1) — keep this consistent
   - config YAML templates belong in program/config_templates/
   - tests belong in program/test_suits/ — prefix test files with test_
   - dependencies go in pyproject.toml only — never requirements.txt

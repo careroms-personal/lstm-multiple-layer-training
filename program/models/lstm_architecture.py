@@ -2,9 +2,11 @@ import pandas as pd
 
 from sklearn.preprocessing import MinMaxScaler  # type: ignore
 
-from typing import List, Optional
+from typing import List, Optional, Union
 from pydantic import BaseModel
 from pydantic.config import ConfigDict
+
+from .optimizer_model import AdamConfig, SGDConfig
 
 class CustomBaseModel(BaseModel):
   model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -18,15 +20,7 @@ class ModelTrainingDataset(CustomBaseModel):
   target_columns: List[str]
   feature_columns: Optional[List[str]]
 
-class ModelTrainingConfig(CustomBaseModel):
-  name: str
-  window_size: int
-  units: List[int]
-  dropout: float
-  float_type: str
-
-
-class ModelTrainingConfig(CustomBaseModel):
+class ModelArchitectureConfig(CustomBaseModel):
   name: str
   window_size: int
   units: List[int]
@@ -36,7 +30,7 @@ class ModelTrainingConfig(CustomBaseModel):
   epochs: int
   batch_size: int
   patience: int
-  optimizer: str
+  optimizer: Union[AdamConfig, SGDConfig]
   loss: str
 
   timeseries_column: str
@@ -48,3 +42,4 @@ class ModelTrainingConfig(CustomBaseModel):
   normalize_test_dataset: pd.DataFrame
 
   scaler: MinMaxScaler
+  gradient_clip: float

@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 from models.datasources_config_model import Files
 from models.training_config import TrainingConfig
-from models.lstm_model import ModelTrainingDataset
+from models.lstm_architecture import ModelTrainingDataset
 
 from .csv_dataset_executor import CSVDatasetExecutor
 
