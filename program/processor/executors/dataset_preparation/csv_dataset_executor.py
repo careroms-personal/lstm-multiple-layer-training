@@ -2,10 +2,13 @@ import sys
 import pandas as pd
 
 from pathlib import Path
-from models.datasources_config import Files
+from typing import Optional
+from models.datasources_config_model import Files
+from models.debug_model import DatasetPreparationDebug
 
 class CSVDatasetExecutor:
-  def __init__(self, datasource_config: Files):
+  def __init__(self, datasource_config: Files, debug_mode: Optional[DatasetPreparationDebug] = None):
+    self.debug_mode = debug_mode or DatasetPreparationDebug()
     self.file_dir = Path(datasource_config.file_dir)
     self.file_list = datasource_config.file_list
 
@@ -24,6 +27,7 @@ class CSVDatasetExecutor:
       sys.exit(1)
 
     missing = [p for p in paths if not p.exists()]
+
     if missing:
       for p in missing:
         print(f"❌ CSV file not found: {p}")
@@ -32,4 +36,6 @@ class CSVDatasetExecutor:
     return pd.concat([pd.read_csv(p) for p in paths], ignore_index=True)
 
   def executor(self) -> pd.DataFrame:
-    return self._load_csv_to_dataframe()
+    result = self._load_csv_to_dataframe()
+    self.debug_mode.log(self.debug_mode.sub_executor, result)
+    return result

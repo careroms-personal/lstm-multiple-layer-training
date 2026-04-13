@@ -51,3 +51,10 @@ output:
   write_output:
     training_data_path: "./training/dataset"
     logs_path: "./training/logs"
+
+debug:
+  dataset_preparation:
+    main_executor: true
+    sub_executor: true
+  model_preparation:
+    main_executor: true

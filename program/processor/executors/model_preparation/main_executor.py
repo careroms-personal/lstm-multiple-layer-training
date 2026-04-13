@@ -8,6 +8,7 @@ from models.lstm_model import ModelTrainingDataset, ModelTrainingConfig
 
 class ModelPreparationExecutor:
   def __init__(self, training_config: TrainingConfig, model_training_dataset: ModelTrainingDataset):
+    self.debug_mode = training_config.debug.model_preparation
     self.lstm_models = training_config.lstm_models
     self.training_setting = training_config.training_setting
 
@@ -23,15 +24,21 @@ class ModelPreparationExecutor:
 
     scaler.fit(combined_dataset[self.model_training_dataset.target_columns])
 
+    self.debug_mode.log(self.debug_mode.main_executor, scaler)
+
     return scaler
-  
+
   def _normalize_training_data(self, dataset: pd.DataFrame, scaler: MinMaxScaler) -> pd.DataFrame:
     target_columns = self.model_training_dataset.target_columns
-    
+
     normalized = scaler.transform(dataset[target_columns])
-    
-    return pd.DataFrame(normalized, columns=target_columns)
-  
+
+    result = pd.DataFrame(normalized, columns=target_columns)
+
+    self.debug_mode.log(self.debug_mode.main_executor, result)
+
+    return result
+
   def _prepare_model_traing_config(self) -> List[ModelTrainingConfig]:
     scaler = self._set_min_max_scale()
 
@@ -69,7 +76,11 @@ class ModelPreparationExecutor:
 
       model_training_configs.append(mtc)
 
+    self.debug_mode.log(self.debug_mode.main_executor, model_training_configs)
+
     return model_training_configs
 
   def execute(self) -> List[ModelTrainingConfig]:
-    return self._prepare_model_traing_config()
+    result = self._prepare_model_traing_config()
+    self.debug_mode.log(self.debug_mode.main_executor, result)
+    return result

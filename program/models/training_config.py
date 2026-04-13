@@ -2,7 +2,8 @@ from pydantic import BaseModel, model_validator
 from typing import Optional, List, Any, Literal
 from enum import StrEnum
 
-from .datasources_config import Files
+from .datasources_config_model import Files
+from .debug_model import Debug
 
 class DatasourceType(StrEnum):
   Files = "files"
@@ -77,3 +78,4 @@ class TrainingConfig(BaseModel):
   training_setting: TrainingSetting
   ensemble: Ensemble
   output: Output
+  debug: Debug

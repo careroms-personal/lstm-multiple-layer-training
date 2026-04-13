@@ -44,3 +44,10 @@ output:
   write_output: # Optional, if not existed, nothing write
     training_data_path: ""
     logs_path: ""
+
+debug:
+  dataset_preparation:
+    main_executor: false
+    sub_executor: false
+  model_preparation:
+    main_executor: false

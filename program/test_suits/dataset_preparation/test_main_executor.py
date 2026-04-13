@@ -2,7 +2,7 @@ import pytest
 import yaml
 
 from pathlib import Path
-from models.datasources_config import Files
+from models.datasources_config_model import Files
 from models.training_config import TrainingConfig
 from models.lstm_model import ModelTrainingDataset
 from processor.executors.dataset_preparation.csv_dataset_executor import CSVDatasetExecutor

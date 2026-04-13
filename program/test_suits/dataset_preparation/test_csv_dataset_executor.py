@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 
 from pathlib import Path
-from models.datasources_config import Files
+from models.datasources_config_model import Files
 from processor.executors.dataset_preparation.csv_dataset_executor import CSVDatasetExecutor
 
 SAMPLE_DIR = Path(__file__).parent.parent / "test_config" / "sample-dataset"

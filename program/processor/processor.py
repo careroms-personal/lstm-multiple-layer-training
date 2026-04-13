@@ -5,8 +5,8 @@ from pydantic import ValidationError
 
 from models.training_config import TrainingConfig
 
-from executors.dataset_preparation.main_executor import DatasetPreparationExecutor
-from executors.model_preparation.main_executor import ModelPreparationExecutor
+from .executors.dataset_preparation.main_executor import DatasetPreparationExecutor
+from .executors.model_preparation.main_executor import ModelPreparationExecutor
 
 class Processor:
   def __init__(self, config_path: str):
