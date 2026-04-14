@@ -28,6 +28,7 @@ training_setting:
   batch_size: 32
   patience: 10
   gradient_clip: 1.0
+  seed: 42
   optimizer: 
     type: adam
     learning_rate: 0.001
@@ -43,19 +44,18 @@ training_setting:
   memory_growth: true
 
 ensemble:
+  enabled: false
   method: stacking
-  meta_learner: linear_regression
+  stacking:
+    meta_learner: linear_regression
 
 output:
   model_output_path: ""
-  print_output: # Optional
-    training_data: false
-    training_logs: false
-    model_summary: false    # useful to always see model architecture
-    ensemble_weights: false # for stacking, see meta-learner weights
+
   write_output: # Optional, if not existed, nothing write
+    enabled: false
     training_data_path: ""
-    logs_path: ""
+    logs_path: "./logs"
 
 debug:
   dataset_preparation:
@@ -66,3 +66,4 @@ debug:
   model_training:
     main_executor: false
     model_build_executor: false
+    model_test_executor: false

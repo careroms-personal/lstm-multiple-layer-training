@@ -1,4 +1,5 @@
 import torch.nn as nn
+import numpy as np
 
 from dataclasses import dataclass
 from torch.utils.data import DataLoader
@@ -24,3 +25,21 @@ class ModelTrainingConfig:
   optimizer: Union[AdamConfig, SGDConfig]
   loss: str
   gradient_clip: float
+
+@dataclass
+class ModelTrainedResult:
+  name: str
+  model: nn.Module
+  scaler: MinMaxScaler
+  target_columns: List[str]
+  test_dataset: DataLoader
+  val_dataset: DataLoader
+
+@dataclass
+class ModelPredictionResult:
+  name: str
+  model: nn.Module
+  scaler: MinMaxScaler
+  target_columns: List[str]
+  predictions: np.ndarray
+  actuals: np.ndarray

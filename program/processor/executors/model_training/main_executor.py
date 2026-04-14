@@ -1,22 +1,24 @@
 import torch, time
 import torch.nn as nn
 
-from typing import List
+from typing import List, Optional
 
 from models.training_config import TrainingConfig
 from models.lstm_architecture import ModelArchitectureConfig
-from models.lstm_training import ModelTrainingConfig
+from models.lstm_training import ModelTrainingConfig, ModelTrainedResult
 from models.optimizer_model import AdamConfig, SGDConfig
 
 from .model_build_executor import ModelBuildExecutor
+from .model_test_executor import ModelTestExecutor
 
 class ModelTrainingExecutor:
-  def __init__(self, training_config: TrainingConfig, model_configs: List[ModelArchitectureConfig]):
+  def __init__(self, training_config: TrainingConfig, model_configs: List[ModelArchitectureConfig], logs_path: Optional[str] = None):
     self.debug_mode = training_config.debug.model_training
     self.debug = training_config.debug
     self.ensemble = training_config.ensemble
     self.training_setting = training_config.training_setting
     self.model_configs = model_configs
+    self.logs_path = logs_path
     self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
   def _get_optimizer(self, model: nn.Module, opt_config) -> torch.optim.Optimizer:
@@ -24,6 +26,7 @@ class ModelTrainingExecutor:
     match opt_config.type.lower():
       case "adam":
         opt_config: AdamConfig = opt_config
+
         return torch.optim.Adam(
           model.parameters(),
           lr=opt_config.learning_rate,
@@ -56,11 +59,15 @@ class ModelTrainingExecutor:
       case _:
         raise ValueError(f"Unsupported loss: {loss_name}")
 
-  def _run_training(self, model_results: List[ModelTrainingConfig]):
+  def _run_training(self, model_results: List[ModelTrainingConfig]) -> List[ModelTrainedResult]:
     total_start = time.time()
+    model_trained_results = []
 
     for model_result in model_results:
-      print(f"[INFO] Training model: {model_result.name}")
+      if self.logs_path:
+        self.debug.configure_file_output(self.logs_path, model_result.name)
+
+      self.debug_mode.write(f"[INFO] Training model: {model_result.name}")
 
       model = model_result.model.to(self.device)
       optimizer = self._get_optimizer(model=model, opt_config=model_result.optimizer)
@@ -105,7 +112,7 @@ class ModelTrainingExecutor:
 
         val_loss /= len(model_result.val_dataset)
 
-        print(f"  Epoch {epoch + 1}/{model_result.epochs} — loss: {train_loss:.4f} - val_loss: {val_loss:.4f}")
+        self.debug_mode.write(f"  Epoch {epoch + 1}/{model_result.epochs} — loss: {train_loss:.4f} - val_loss: {val_loss:.4f}")
 
         # early stopping
         if val_loss < best_val_loss:
@@ -115,25 +122,41 @@ class ModelTrainingExecutor:
         else:
           patience_counter += 1
           if patience_counter >= model_result.patience:
-            print(f"  [EarlyStopping] Stopped at epoch {epoch + 1}")
+            self.debug_mode.write(f"  [EarlyStopping] Stopped at epoch {epoch + 1}")
             break
       
       if best_weights:
         model.load_state_dict(best_weights)
 
-      self.debug_mode.log(self.debug_mode.main_executor, model)
+      trained_model = ModelTrainedResult(
+        name=model_result.name,
+        model=model,
+        scaler=model_result.scaler,
+        target_columns=model_result.target_columns,
+        test_dataset=model_result.test_dataset,
+        val_dataset=model_result.val_dataset,
+      )
+
+      model_trained_results.append(trained_model)
 
     total_elapsed = time.time() - total_start
-    print(f"[INFO] Total training time: {total_elapsed:.1f}s")
+    self.debug_mode.write(f"[INFO] Total training time: {total_elapsed:.1f}s")
 
-    return model_results
+    self.debug_mode.log(self.debug_mode.main_executor, model_trained_results)
 
-  def execute(self):
-    model_results   = []
+    return model_trained_results
+
+  def execute(self) -> List[ModelTrainedResult]:
+    model_results = []
 
     for model_config in self.model_configs:
       build_executor = ModelBuildExecutor(model_config, self.debug)
       result = build_executor.execute()
-      model_results  .append(result)
+      model_results.append(result)
 
-    return self._run_training(model_results=model_results)
+    trained_results = self._run_training(model_results=model_results)
+    
+    test_executor = ModelTestExecutor(model_trained_results=trained_results, debug_mode=self.debug_mode, logs_path=self.logs_path)
+    test_executor.execute()
+
+    return trained_results

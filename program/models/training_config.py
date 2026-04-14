@@ -49,6 +49,7 @@ class TrainingSetting(BaseModel):
   epochs: int = 50
   batch_size: int = 32
   patience: int = 10
+  seed: int = 42
   optimizer: Union[AdamConfig, SGDConfig]
   loss: Literal["mse"] = "mse"
   gradient_clip: float = 1.0
@@ -58,22 +59,17 @@ class TrainingSetting(BaseModel):
   memory_growth: bool = True 
 
 class Ensemble(BaseModel):
+  enabled: bool = False
   method: Literal["stacking"]
   meta_learner: Literal["linear_regression"]
 
-class PrintOutput(BaseModel):
-  training_data: bool = False
-  training_logs: bool = False
-  model_summary: bool = False
-  ensemble_weights: bool = False
-
 class WriteOutput(BaseModel):
+  enabled: bool = False
   training_data_path: str = ""
   logs_path: str = ""
 
 class Output(BaseModel):
   model_output_path: str
-  print_output: Optional[PrintOutput] = None
   write_output: Optional[WriteOutput] = None
 
 class TrainingConfig(BaseModel):
