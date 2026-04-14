@@ -58,10 +58,13 @@ class TrainingSetting(BaseModel):
   use_gpu: bool = True
   memory_growth: bool = True 
 
+class StackingConfig(BaseModel):
+  meta_learner: Literal["linear_regression"] = "linear_regression"
+
 class Ensemble(BaseModel):
   enabled: bool = False
-  method: Literal["stacking"]
-  meta_learner: Literal["linear_regression"]
+  method: Optional[Literal["stacking"]] = None
+  stacking: Optional[StackingConfig] = None
 
 class WriteOutput(BaseModel):
   enabled: bool = False

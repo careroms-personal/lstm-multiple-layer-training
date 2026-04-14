@@ -44,7 +44,7 @@ training_setting:
   memory_growth: true
 
 ensemble:
-  enabled: false
+  enabled: true
   method: stacking
   stacking:
     meta_learner: linear_regression

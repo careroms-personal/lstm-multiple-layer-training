@@ -5,7 +5,7 @@ from typing import List, Tuple
 from sklearn.linear_model import LinearRegression  # type: ignore
 
 from functions.print_analyze_metrics import print_metrics
-from models.training_config import Ensemble
+from models.training_config import Ensemble, StackingConfig
 from models.lstm_training import ModelTrainedResult
 
 class StackingEnsembleExecutor:
@@ -15,11 +15,12 @@ class StackingEnsembleExecutor:
     self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
   def _get_meta_learner(self):
-    match self.ensemble.meta_learner.lower():
+    stacking: StackingConfig = self.ensemble.stacking
+    match stacking.meta_learner.lower():
       case "linear_regression":
         return LinearRegression()
       case _:
-        raise ValueError(f"Unsupported meta_learner: {self.ensemble.meta_learner}")
+        raise ValueError(f"Unsupported meta_learner: {stacking.meta_learner}")
 
   def _get_predictions(self, trained_result: ModelTrainedResult, dataset) -> Tuple[np.ndarray, np.ndarray]:
     all_preds = []
@@ -60,6 +61,16 @@ class StackingEnsembleExecutor:
       all_test_predictions.append(test_preds)
       if test_actuals is None:
         test_actuals = test_acts
+
+    min_val_size  = min(p.shape[0] for p in all_val_predictions)
+    min_test_size = min(p.shape[0] for p in all_test_predictions)
+
+    all_val_predictions  = [p[-min_val_size:]  for p in all_val_predictions]
+    all_test_predictions = [p[-min_test_size:] for p in all_test_predictions]
+
+    val_actuals  = val_actuals[-min_val_size:]
+    test_actuals = test_actuals[-min_test_size:]
+    
 
     # stack predictions as features
     meta_X_val  = np.column_stack(all_val_predictions)

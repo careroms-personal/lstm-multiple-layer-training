@@ -12,6 +12,7 @@ from .executors.dataset_preparation.main_executor import DatasetPreparationExecu
 from .executors.model_preparation.main_executor import ModelPreparationExecutor
 from .executors.model_training.main_executor import ModelTrainingExecutor
 from .executors.model_ensemble.main_executor import ModelEnsembleExecutor
+from .executors.model_exporter.main_executor import ModelExporterExecutor
 
 class Processor:
   def __init__(self, config_path: str):
@@ -88,5 +89,8 @@ class Processor:
     trained_models = model_training.execute()
 
     if self.training_config.ensemble.enabled:
-      model_ensemble = ModelEnsembleExecutor(training_config=self.training_config, model_prediction_results=trained_models)
-      model_ensemble.execute()
+      model_ensemble = ModelEnsembleExecutor(training_config=self.training_config, model_trained_results=trained_models)
+      ensemble_model = model_ensemble.execute()
+
+      model_export = ModelExporterExecutor(training_config=self.training_config, ensembled_result=ensemble_model)
+      model_export.execute()
