@@ -22,19 +22,27 @@ class ModelExporterExecutor:
     # 1. save each LSTM model
     models_metadata = []
     for trained_result in self.ensembled_result.model_trained_results:
-      model_file = models_path / f"{trained_result.name}.pth"
+      model_dir = models_path / trained_result.name
+      model_dir.mkdir(exist_ok=True)
+
+      scripted = torch.jit.script(trained_result.model)
+      scripted.save(str(model_dir / "model.pt"))
 
       torch.save({
-        "state_dict": trained_result.model.state_dict(),
         "scaler": trained_result.scaler,
         "target_columns": trained_result.target_columns,
-      }, model_file)
+        "unit": trained_result.unit,
+        "dropout": trained_result.dropout,
+        "n_features": trained_result.n_features,
+        "window_size": trained_result.windows_size,
+        "batch_size": trained_result.batch_size,
+      }, model_dir / "metadata.pth")
 
-      print(f"[INFO] Saved model: {model_file}")
+      print(f"[INFO] Saved: {model_dir}")
       models_metadata.append(trained_result.name)
 
     # 2. save ensemble_model
-    ensemble_file = output_path / "ensemble_model.pk1"
+    ensemble_file = output_path / "ensemble_model.pkl"
     with open(ensemble_file, "wb") as f:
       pickle.dump(self.ensembled_result.ensemble_model, f)
 

@@ -19,6 +19,11 @@ class ModelTrainingConfig:
   scaler: MinMaxScaler
   target_columns: List[str]
 
+  unit: str
+  dropout: float
+  n_features: int
+  windows_size: int
+
   epochs: int
   batch_size: int
   patience: int
@@ -32,6 +37,11 @@ class ModelTrainedResult:
   model: nn.Module
   scaler: MinMaxScaler
   target_columns: List[str]
+  unit: str
+  dropout: float
+  n_features: int
+  windows_size: int
+  batch_size: int
   test_dataset: DataLoader
   val_dataset: DataLoader
 

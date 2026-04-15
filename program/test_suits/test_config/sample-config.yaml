@@ -10,7 +10,7 @@ datasource:
 
 training_data:
   validation_data_ratio: 0.2
-  test_data_ratio: 0.1
+  test_data_ratio: 0.2
   timeseries_column: "elapsed_s"
   target_columns: [disk_gb]
   feature_columns: []
@@ -27,6 +27,12 @@ lstm_models:
     units: [64, 32]
     dropout: 0.2
     float_type: float32
+
+  # - name: 2_week_prediction
+  #   window_size: 4032
+  #   units: [64, 32]
+  #   dropout: 0.2
+  #   float_type: float32
 
 training_setting:
   epochs: 50

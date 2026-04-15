@@ -128,11 +128,18 @@ class ModelTrainingExecutor:
       if best_weights:
         model.load_state_dict(best_weights)
 
+      model.eval()
+
       trained_model = ModelTrainedResult(
         name=model_result.name,
         model=model,
         scaler=model_result.scaler,
         target_columns=model_result.target_columns,
+        unit=model_result.unit,
+        dropout=model_result.dropout,
+        n_features=model_result.n_features,
+        batch_size=model_result.batch_size,
+        windows_size=model_result.windows_size,
         test_dataset=model_result.test_dataset,
         val_dataset=model_result.val_dataset,
       )

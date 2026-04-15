@@ -46,6 +46,14 @@ class ModelBuildExecutor:
     n_targets = len(self.model_config.target_columns)
     data = torch.tensor(df.values, dtype=dtype)
 
+    if len(data) <= self.model_config.window_size:
+      raise ValueError(
+        f"Dataset too small for window_size! "
+        f"data={len(data)} rows, "
+        f"window_size={self.model_config.window_size}. "
+        f"Need at least {self.model_config.window_size + 1} rows."
+      )
+
     X, y = [], []
     
     for i in range(len(data) - self.model_config.window_size):
@@ -77,10 +85,10 @@ class ModelBuildExecutor:
     if self.debug_mode.model_build_executor:
       self.debug_mode.log(self.debug_mode.model_build_executor, model)
 
-    return model
+    return model, n_features
 
   def execute(self):
-    model = self._build_model_architecture()
+    model, n_features = self._build_model_architecture()
     train_ds = self._build_dataset(self.model_config.normalize_training_dataset)
     val_ds = self._build_dataset(self.model_config.normalize_validation_dataset)
     test_ds = self._build_dataset(self.model_config.normalize_test_dataset)
@@ -93,6 +101,10 @@ class ModelBuildExecutor:
       test_dataset=test_ds,
       scaler=self.model_config.scaler,
       target_columns=self.model_config.target_columns,
+      unit=self.model_config.units,
+      dropout=self.model_config.dropout,
+      n_features=n_features,
+      windows_size=self.model_config.window_size,
       epochs=self.model_config.epochs,
       batch_size=self.model_config.batch_size,
       patience=self.model_config.patience,
